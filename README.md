@@ -1,7 +1,7 @@
 # Belmont Patcher
 
 **Unofficial fan patch for *Castlevania: Belmont's Curse* on Steam (PC).**
-by PromptedNotProud (made with AI assistance)
+BY PromptedNotProud (made with AI assistance)
 
 <!-- Your own disclosure paragraph goes here. -->
 
