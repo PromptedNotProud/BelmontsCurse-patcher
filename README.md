@@ -6,7 +6,8 @@ By PromptedNotProud (made with AI assistance)
 <!-- Your own disclosure paragraph goes here. -->
 
 The game keeps playing exactly as it does now (same physics, same controls, same timing), but it is drawn smoothly at your
-monitor's frame rate, looks sharper, and no longer freezes on the first line of each conversation. There is also an
+monitor's frame rate, looks sharper, and no longer freezes on the first line of each conversation or when the first
+Harpy appears. There is also an
 optional, experimental 120 Hz input mode that makes Rose react to your inputs sooner.
 
 **[Download the latest release](../../releases/latest)**
@@ -43,6 +44,8 @@ optional, experimental 120 Hz input mode that makes Rose react to your inputs so
 **Gameplay**
 - **Skip Startup Logos**: boots straight to the title screen.
 - **Dialogue Preload**: removes the short freeze on the first line of every conversation.
+- **Font Preload**: removes the hitch when the first Harpy appears (Unity was reading every font installed in Windows at
+  that moment); the font list is now built once while the first room loads.
 
 ## Install
 

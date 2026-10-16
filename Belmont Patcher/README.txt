@@ -1,4 +1,4 @@
-Belmont Patcher v0.28.0
+Belmont Patcher v0.29.0
 =======================
 by PromptedNotProud (made with AI assistance)
 
@@ -102,6 +102,11 @@ Gameplay
     controls) still appear when they would.
   - Dialogue Preload (on): the first line of every conversation no longer freezes the game for a
     tenth of a second.
+  - Font Preload (on): Unity makes a list of the fonts installed in Windows the first time the game
+    looks one up, by opening every font file. Without this option that happens in the middle of
+    the first Harpy fight: a short hitch, or most of a second when Windows hasn't read the font
+    files recently (after a restart, for example). With it, the list is made while the first room
+    loads, behind the room transition.
 
 The "Install Python/Packages" button only installs the package listed above, without touching
 the game. "Apply" does that too, so you normally never need it; it is there in case the package
@@ -167,6 +172,13 @@ TROUBLESHOOTING
     design meeting a width it never expected. Untick the option and click Apply.
   - Something looks wrong in game: untick the related option, click Apply, and tell the person
     who gave you this mod, with the log text from the window (also saved as launcher_log.txt).
+
+
+WHAT CHANGED IN 0.29
+--------------------
+  - New Gameplay option Font Preload (on): no more hitch when the first Harpy appears. The game
+    was reading every font installed in Windows at that moment (40 MB on a PC with 540 fonts);
+    it now does that once while the first room loads.
 
 
 WHAT CHANGED IN 0.28
