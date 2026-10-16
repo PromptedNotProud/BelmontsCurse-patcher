@@ -102,11 +102,8 @@ Gameplay
     controls) still appear when they would.
   - Dialogue Preload (on): the first line of every conversation no longer freezes the game for a
     tenth of a second.
-  - Font Preload (on): Unity makes a list of the fonts installed in Windows the first time the game
-    looks one up, by opening every font file. Without this option that happens in the middle of
-    the first Harpy fight: a short hitch, or most of a second when Windows hasn't read the font
-    files recently (after a restart, for example). With it, the list is made while the first room
-    loads, behind the room transition.
+  - Font Preload (on): removes hitching in the game from font loading. The game's font list is
+    prepared while the first room loads instead of during gameplay.
 
 The "Install Python/Packages" button only installs the package listed above, without touching
 the game. "Apply" does that too, so you normally never need it; it is there in case the package
@@ -176,9 +173,7 @@ TROUBLESHOOTING
 
 WHAT CHANGED IN 0.29
 --------------------
-  - New Gameplay option Font Preload (on): no more hitch when the first Harpy appears. The game
-    was reading every font installed in Windows at that moment (40 MB on a PC with 540 fonts);
-    it now does that once while the first room loads.
+  - New Gameplay option Font Preload (on): removes hitching in the game from font loading.
 
 
 WHAT CHANGED IN 0.28

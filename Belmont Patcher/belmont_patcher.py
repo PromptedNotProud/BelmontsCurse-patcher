@@ -66,8 +66,8 @@ CONFIG = {
     # gameplay
     'skip_splash':        True,   # boot straight to the title screen: no company logos or startup notices
     'dialogue_preload':   True,   # loads dialogue portraits in the background when a cutscene starts (no hitch on the first line)
-    'font_preload':       True,   # Unity's list of the installed Windows fonts is built while the first room loads, not in the
-                                  #   middle of gameplay the first time a text needs a system font (a hitch in the first Harpy fight)
+    'font_preload':       True,   # removes hitching in the game from font loading (Unity's list of the installed Windows fonts
+                                  #   is built while the first room loads instead of during gameplay)
 }
 REFLECTION_AA_CHOICES = ('off', 'smaa', 'taa')
 
@@ -1155,7 +1155,7 @@ GUI_GROUPS = [
     ("Gameplay", [
         ('skip_splash', "Skip Startup Logos", "Boot straight to the title screen (first-launch setup screens still appear)"),
         ('dialogue_preload', "Dialogue Preload", "No hitch on the first line of a conversation"),
-        ('font_preload', "Font Preload", "No hitch the first time the game looks up a Windows font (the first Harpy fight)"),
+        ('font_preload', "Font Preload", "Removes hitching in the game from font loading"),
     ]),
 ]
 GUI_COLUMNS = [["Image Quality", "Graphics", "Gameplay"], ["Camera", "Motion"]]
