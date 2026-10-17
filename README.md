@@ -18,6 +18,9 @@ optional, experimental 120 Hz input mode that makes Rose react to your inputs so
 **Image Quality**
 - **Improved Resolutions**: adds resolutions from 1280x720 to 7680x4320 and makes the game render beyond 4K instead of
   upscaling. Every entry in the game's menu is the size you actually get.
+  **Above 4K (DSR/VSR):** set your Windows desktop to that resolution and use borderless fullscreen. Exclusive
+  Fullscreen works too, but resets after alt-tab. To restore it, pick another resolution in the game menu, then yours
+  again.
 - **Ultra-Wide Rendering** *(experimental, off by default)*: 2560x1080, 3440x1440 and 5120x1440 render at their full width
   instead of a 16:9 image with black bars.
 - **TAA in the Anti-Aliasing Menu**: the game ships Unity's temporal anti-aliasing but hides it; it becomes a 4th entry
@@ -28,8 +31,9 @@ optional, experimental 120 Hz input mode that makes Rose react to your inputs so
 - Better shadows, shadows in reflections, better light shafts, 16x anisotropic filtering.
 
 **Camera**
-- **Closer Camera**: characters about 25% larger on screen (adjustable). Boss arenas, deliberately wide areas and the
-  special cameras the game zooms out to keep the original framing.
+- **Closer Camera**: characters about 25% larger on screen (adjustable). It zooms in toward Rose, so she keeps her
+  place on screen. Boss arenas, deliberately wide areas and the special cameras the game zooms out to keep the original
+  framing.
 - **F8** switches between the closer camera and the original one in game.
 
 **Motion**

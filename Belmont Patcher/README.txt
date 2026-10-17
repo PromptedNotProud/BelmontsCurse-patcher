@@ -1,4 +1,4 @@
-Belmont Patcher v0.29.0
+Belmont Patcher v0.29.1
 =======================
 by PromptedNotProud (made with AI assistance)
 
@@ -52,6 +52,9 @@ Image Quality
     renders at its full size instead of stopping at 3840x2160 and being upscaled. The same step
     fills in an English menu text the game left empty: the Anti-Aliasing "None" option, which
     otherwise shows the French word "Aucun".
+    Above 4K (DSR/VSR): set your Windows desktop to that resolution and use borderless
+    fullscreen. Exclusive Fullscreen works too, but resets after alt-tab. To restore it, pick
+    another resolution in the game menu, then yours again.
   - Ultra-Wide Rendering (off, experimental): the game only draws 16:9, so on an ultra-wide
     monitor it shows a 16:9 image with black bars at the sides, whatever you pick. With this
     option the three ultra-wide entries render at their full width: you see more of the level to
@@ -82,6 +85,8 @@ Camera
     the screen stay in view; the camera blends between the two as you walk in and out. The same
     goes for the special cameras the game switches to at set moments (a door opening, a reveal):
     when they zoom out you get the game's own framing, when they zoom in the closer camera stays.
+    The closer camera zooms in toward Rose rather than the centre of the screen, so she keeps
+    the place on screen the game gives her and the floor under her stays in view.
   - F8 Switches to the Stock Camera in Game (on): press F8 to go back and forth between the closer
     camera and the game's own framing, for comparing the two. The camera eases over; a Windows
     sound confirms (the default sound for the stock camera, the "information" sound for the closer
@@ -169,6 +174,13 @@ TROUBLESHOOTING
     design meeting a width it never expected. Untick the option and click Apply.
   - Something looks wrong in game: untick the related option, click Apply, and tell the person
     who gave you this mod, with the log text from the window (also saved as launcher_log.txt).
+
+
+WHAT CHANGED IN 0.29.1
+----------------------
+  - Closer Camera: it zoomed in around the centre of the screen, and because the game frames Rose
+    low, her feet and the floor could drop off the bottom in some rooms. It now zooms in toward Rose.
+  - Note on resolutions above 4K (see Improved Resolutions).
 
 
 WHAT CHANGED IN 0.29
