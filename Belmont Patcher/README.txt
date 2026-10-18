@@ -1,4 +1,4 @@
-Belmont Patcher v0.29.1
+Belmont Patcher v0.29.2
 =======================
 by PromptedNotProud (made with AI assistance)
 
@@ -87,9 +87,9 @@ Camera
     when they zoom out you get the game's own framing, when they zoom in the closer camera stays.
     The closer camera zooms in toward Rose rather than the centre of the screen, so she keeps
     the place on screen the game gives her and the floor under her stays in view.
-  - F8 Switches to the Stock Camera in Game (on): press F8 to go back and forth between the closer
-    camera and the game's own framing, for comparing the two. The camera eases over; a Windows
-    sound confirms (the default sound for the stock camera, the "information" sound for the closer
+  - F8 Switches to the Stock Camera in Game (on): press F8 to pull back to the game's own, wider
+    framing when you need to see more of the room, and again for the closer camera. The camera
+    eases over; a Windows sound confirms (the default sound for the stock camera, the "information" sound for the closer
     one).
 
 Motion
@@ -163,7 +163,8 @@ TROUBLESHOOTING
     Install.bat always includes it.)
   - Package install failed / menu text skipped: check your internet connection and click
     "Install Python/Packages", then Apply again. The rest of the mod is already installed
-    when this happens.
+    when this happens, except Improved Resolutions and TAA in the menu, which need the menu
+    text: they stay off until it is updated (the log says so next to them).
   - "could not be written" next to a file in the log: Windows refused to replace the file
     (the game or Steam still had it open, or the antivirus was scanning it). Close the game and
     click Apply again; it only redoes the files it missed.
@@ -173,7 +174,18 @@ TROUBLESHOOTING
   - Ultra-Wide Rendering shows something odd at the sides of a room: that is the game's level
     design meeting a width it never expected. Untick the option and click Apply.
   - Something looks wrong in game: untick the related option, click Apply, and tell the person
-    who gave you this mod, with the log text from the window (also saved as launcher_log.txt).
+    who gave you this mod, with the log text from the window (also saved as install_log.txt in the Belmont Patcher folder).
+
+
+WHAT CHANGED IN 0.29.2
+----------------------
+  - F8 is now described as what it's for: pulling back to the game's wider view when you need to
+    see more of the room.
+  - When the menu text could not be updated (the Python package failed to install, a file was in
+    use), the resolution menu showed the wrong names for the sizes it applied: on a 1440p monitor
+    the highest entry read "1920x1080". Improved Resolutions now stays off until the menu text is
+    in place, so the menu is always right; click Apply again once the cause is fixed.
+  - The window's log is also saved as install_log.txt in the Belmont Patcher folder, for bug reports.
 
 
 WHAT CHANGED IN 0.29.1

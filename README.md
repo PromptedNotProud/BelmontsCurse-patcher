@@ -34,7 +34,8 @@ optional, experimental 120 Hz input mode that makes Rose react to your inputs so
 - **Closer Camera**: characters about 25% larger on screen (adjustable). It zooms in toward Rose, so she keeps her
   place on screen. Boss arenas, deliberately wide areas and the special cameras the game zooms out to keep the original
   framing.
-- **F8** switches between the closer camera and the original one in game.
+- **F8** pulls back to the game's wider view in game when you need to see more of the room, and back to the closer
+  camera.
 
 **Motion**
 - **Smooth Motion**: the game simulates at 30 frames per second. It already draws the player and enemies smoothly in

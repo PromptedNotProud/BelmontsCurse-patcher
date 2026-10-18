@@ -21,7 +21,7 @@ After a Steam update just run it again: it sees the new vanilla files, saves the
 stock copies and patches those.
 """
 PATCHER_AUTHOR = 'PromptedNotProud'
-PATCHER_VERSION = 'v0.29.1'   # semantic versioning MAJOR.MINOR.PATCH: features -> MINOR, fixes only -> PATCH; v20..v27 = 0.20.0..0.27.0
+PATCHER_VERSION = 'v0.29.2'   # semantic versioning MAJOR.MINOR.PATCH: features -> MINOR, fixes only -> PATCH; v20..v27 = 0.20.0..0.27.0
 CONFIG = {
     # resolution and anti-aliasing
     'resolutions':        True,   # the resolution list: 16:9 from 1280x720 to 7680x4320 plus 2560x1080, 3440x1440 and 5120x1440;
@@ -48,8 +48,8 @@ CONFIG = {
                                      #  areas are 12-13.5 units high, the deliberately wide ones 14-18
     'camera_zoom_stock_on_zoom_out': True, # cameras the level switches to on purpose (door openings, vistas, set
                                      #  pieces) that frame wider than the room's follow camera get the stock framing
-    'camera_toggle':      True,   # a key in game switches between the closer camera and the stock framing (for checking
-                                  #   camera areas; the zoom eases over as usual). A system sound confirms each switch.
+    'camera_toggle':      True,   # a key in game switches between the closer camera and the stock framing (to see more of
+                                  #   the room when needed; the zoom eases over as usual). A system sound confirms each switch.
     'camera_toggle_key':  'F8',   #   F1..F12, or a Windows virtual-key code
     # motion
     'smooth_motion':      True,   # every object the simulation moves or rotates (water wheels, platforms, gates, cutscene
@@ -712,19 +712,36 @@ def install(game, cfg, log, bundles=True):
     if hashlib.sha256(stock).hexdigest() != spec['stock_sha256']:
         log("Note: this is a different game build than the patcher was made for. Searching by signature...")
     log("Belmont Patcher %s, game folder: %s" % (PATCHER_VERSION, game))
-    log("Patching GameAssembly.dll...")
-    out, rep = patch_dll(stock, cfg, spec)
-    rep.update(patch_assets(data_dir, stock_dir, cfg))
-    _atomic_write(dll, out)
-    log("GameAssembly.dll written (sha256 %s)" % hashlib.sha256(out).hexdigest()[:16])
+    # The resolution menu is two halves: the sizes live in GameAssembly.dll, their names in the asset bundles (one table
+    # per language). They must change together, or the menu shows the wrong names for what it applies (v0.29.2: a player
+    # whose package install failed saw "1920x1080" as the highest entry of a 1440p monitor). So the bundles go first, and
+    # the DLL's resolution patch is applied only while the names are in place.
+    rep = {}
     if bundles:
         log("Updating asset bundles (menu text)...")
         try: patch_bundles(game, here_dir(), cfg, log, rep)
         except Exception as e:
-            log("Asset bundle step failed: %r. The DLL patch is still installed." % (e,)); rep['menu_text'] = rep['taa_menu'] = 'FAILED'
+            log("Asset bundle step failed: %r. Continuing with the rest of the mod." % (e,)); rep['menu_text'] = rep['taa_menu'] = 'FAILED'
+    want_res = bool(cfg.get('resolutions', True)); lst = labels_state(game, here_dir())
+    dcfg = dict(cfg)
+    if want_res and lst != 'on': dcfg['resolutions'] = False
+    log("Patching GameAssembly.dll...")
+    out, drep = patch_dll(stock, dcfg, spec)
+    rep.update(drep)
+    if want_res and lst != 'on':
+        why = 'the menu text could not be updated' if bundles else 'the asset bundle step was skipped'
+        if lst == 'mixed': why = 'only part of the menu text is updated'
+        rep['resolutions'] = 'off (%s, see above; fix that and click Apply again)' % why
+        if cfg.get('ultrawide'): rep['ultrawide'] = 'off (needs Improved Resolutions)'
+    rep.update(patch_assets(data_dir, stock_dir, cfg))
+    _atomic_write(dll, out)
+    log("GameAssembly.dll written (sha256 %s)" % hashlib.sha256(out).hexdigest()[:16])
     w = max(len(k) for k in rep)
     log("")
     for k in sorted(rep): log("  %-*s  %s" % (w, k, rep[k]))
+    if want_res and lst != 'on':
+        log("\nImproved Resolutions stays off until the menu text is updated: the new sizes and their names in the menu"
+            "\nmust change together. The rest of the mod is installed.")
     n = int(cfg.get('sim_rate', 1) or 1)
     if n > 1 and rep.get('tick_rate_fast') != 'ON': n = 1
     how = '' if n == 1 else ' (scheduler: stock 30 Hz frames, input on the next tick; experimental)'
@@ -889,6 +906,23 @@ def _bundle_paths(game, here):
     return dict(bdir=os.path.join(aa, 'StandaloneWindows64'), cat=os.path.join(aa, 'catalog.json'),
                 sdir=os.path.join(st, 'bundles'), scat=os.path.join(st, 'catalog.json'), stp=os.path.join(st, 'bundle_state.json'),
                 old=os.path.join(st, 'mip_state.json'))
+
+def labels_state(game, here):
+    """are the game's menu files carrying this version's resolution names right now? 'on' (every language table
+    rewritten by this version and unchanged since), 'off' (none), 'mixed' (some): read from bundle_state.json and the
+    files themselves, so a failed or skipped bundle step, a game update or an older version's edit all count as not on"""
+    P = _bundle_paths(game, here)
+    try: st = json.load(open(P['stp']))
+    except Exception: return 'off'
+    on = total = 0
+    for f in st.get('labels', []):
+        md = (st.get('mod') or {}).get(f)
+        if isinstance(md, dict) and not md.get('lbl'): continue    # a table without resolution names (nothing to relabel)
+        total += 1
+        tag = str(st.get('applied', {}).get(f, '')); gp = os.path.join(P['bdir'], f)
+        if tag.split(':')[0] == str(BUNDLE_VER) and 'lbl' in tag.split(':')[-1].split(',') \
+                and os.path.exists(gp) and st.get('out', {}).get(f) == _sha(gp): on += 1
+    return 'off' if not on else ('on' if on == total else 'mixed')
 
 def restore_bundles(game, here, log):
     P = _bundle_paths(game, here)
@@ -1160,7 +1194,7 @@ GUI_GROUPS = [
     ]),
     ("Camera", [
         ('camera_zoom', "Closer Camera", "Characters larger on screen; boss arenas and the wide areas keep the game's own framing"),
-        ('camera_toggle', "F8 Switches to the Stock Camera in Game", "For comparing the two; a sound confirms each switch"),
+        ('camera_toggle', "F8 Switches to the Stock Camera in Game", "Pull back to the game's wider view when you need to see more of the room; a sound confirms each switch"),
     ]),
     ("Motion", [
         ('smooth_motion', "Smooth Motion", "Moving objects, prop animations, cutscene camera and walking drawn at your frame rate"),
@@ -1275,6 +1309,18 @@ def run_gui():
             ttk.Button(bf, text="Install Python/Packages", command=lambda: start('packages'))]
     btns[0].pack(side='left'); btns[1].pack(side='left', padx=8); btns[2].pack(side='left')
     ttk.Label(bf, text="Close the game before applying.", foreground='#777').pack(side='right')
+    # v0.29.2: the window's log is also appended to install_log.txt next to this script, for bug reports (written here, on
+    # the window's thread; a folder that can't be written to just leaves the window as the only copy)
+    logf = [None]
+    def flog(m):
+        if logf[0] is False: return
+        try:
+            if logf[0] is None:
+                import time
+                logf[0] = open(os.path.join(here_dir(), 'install_log.txt'), 'a', encoding='utf-8', errors='replace')
+                logf[0].write('\n=== %s  Belmont Patcher %s ===\n' % (time.strftime('%Y-%m-%d %H:%M:%S'), PATCHER_VERSION))
+            logf[0].write(m + '\n'); logf[0].flush()
+        except Exception: logf[0] = False
     def pump():
         try:
             while True:
@@ -1284,6 +1330,7 @@ def run_gui():
                     for b in btns: b.state(['!disabled'])
                     continue
                 logw.configure(state='normal'); logw.insert('end', m + '\n'); logw.see('end'); logw.configure(state='disabled')
+                flog(m)
         except queue.Empty: pass
         root.after(100, pump)
     pump()
@@ -1300,6 +1347,9 @@ def run_gui():
             messagebox.showwarning("Belmont Patcher", "Still working. Please wait until the log says Done, then close the window.")
             return
         root.destroy()
+        if logf[0]:
+            try: logf[0].close()
+            except Exception: pass
     root.protocol("WM_DELETE_WINDOW", on_close)
     root.mainloop()
 
