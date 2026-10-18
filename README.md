@@ -43,7 +43,11 @@ optional, experimental 120 Hz input mode that makes Rose react to your inputs so
   camera blends and characters walking in cutscenes.
 - **120 Hz input** *(experimental, off by default)*: every character and object still runs its original 30 Hz code, so
   movement, hits and timing are identical. Only the moment Rose's next frame starts changes: on the next 1/120 s after you
-  press a button, instead of the next 1/30 s. Up to 25 ms less input lag.
+  press a button, instead of the next 1/30 s. Up to 25 ms less input lag; measured inside the game, the time from a
+  key press to Rose moving dropped from about 48 ms to 35 ms on average.
+- **Low Latency** *(experimental, off by default)*: one frame waits for the graphics card instead of Unity's default
+  two. About 2 ms less input lag with 30 Hz input and 4 to 5 ms with 120 Hz input, measured inside the game. It can
+  cost a little frame rate when the GPU is at its limit. NVIDIA's Low Latency Mode isn't needed with it.
 
 **Gameplay**
 - **Skip Startup Logos**: boots straight to the title screen.
@@ -85,7 +89,7 @@ Windows 10 or 11 and the Steam version of *Castlevania: Belmont's Curse* (the de
 
 - Ultra-wide rendering hasn't been tested on an ultra-wide monitor yet. The game was designed for 16:9, so the edges of
   some rooms may show things that were meant to stay off-screen.
-- TAA in reflections and the 120 Hz input mode are experimental. If something looks wrong, switch the option off and
+- TAA in reflections, Low Latency and the 120 Hz input mode are experimental. If something looks wrong, switch the option off and
   click Apply.
 
 Bug reports are welcome on the [Issues](../../issues) page. Please include the text from the patcher's log window.

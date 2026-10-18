@@ -1,4 +1,4 @@
-Belmont Patcher v0.29.2
+Belmont Patcher v0.30.0
 =======================
 by PromptedNotProud (made with AI assistance)
 
@@ -100,6 +100,11 @@ Motion
     moving and crumbling platforms, gates, saws, cutscene props, projectiles, animated doors,
     levers, chests, spikes, drawbridges, cutscene camera blends and characters walking in
     cutscenes. It applies in both modes.
+  - Low Latency (off, experimental): one frame waits for the graphics card instead of Unity's
+    default two, so what you press reaches the screen a little sooner. Measured inside the game
+    it took about 2 ms off with 30 Hz input and 4 to 5 ms with 120 Hz input. It can cost a
+    little frame rate when the graphics card is at its limit. NVIDIA's Low Latency Mode isn't
+    needed with it: set to Ultra, it added lag in the same test.
 
 Gameplay
   - Skip Startup Logos (on): the game boots straight to its title screen, without the company logos
@@ -124,7 +129,8 @@ original 30 frames-per-second code, so jumps, lunges, dodges, hits and knockback
 ones (this has been verified move by move against the unmodified game). The only difference is
 WHEN Rose's next frame starts while you are controlling her: on the next 1/120 s tick after you
 press or release a button or move the stick, instead of waiting for the next 1/30 s step. That
-takes up to 25 ms off the input lag. The time gained is given back over the following frames, so
+takes up to 25 ms off the input lag (measured inside the game: from about 48 ms to 35 ms on
+average, key press to Rose moving). The time gained is given back over the following frames, so
 she never gets ahead of the rest of the game, and the rest of the game keeps its exact timing.
 
 "60 Hz input" is the same thing with 1/60 s ticks (about half the benefit).
@@ -177,6 +183,12 @@ TROUBLESHOOTING
     who gave you this mod, with the log text from the window (also saved as install_log.txt in the Belmont Patcher folder).
 
 
+WHAT CHANGED IN 0.30.0
+----------------------
+  - New option Low Latency (Motion, off by default, experimental): one frame waits for the
+    graphics card instead of two, for a few milliseconds less input lag.
+
+
 WHAT CHANGED IN 0.29.2
 ----------------------
   - F8 is now described as what it's for: pulling back to the game's wider view when you need to
@@ -186,6 +198,7 @@ WHAT CHANGED IN 0.29.2
     the highest entry read "1920x1080". Improved Resolutions now stays off until the menu text is
     in place, so the menu is always right; click Apply again once the cause is fixed.
   - The window's log is also saved as install_log.txt in the Belmont Patcher folder, for bug reports.
+  - The settings window shows the note about resolutions above 4K under Improved Resolutions.
 
 
 WHAT CHANGED IN 0.29.1
