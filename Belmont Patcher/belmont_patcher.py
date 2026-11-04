@@ -1230,12 +1230,26 @@ def run_gui():
     root = tk.Tk(); root.title("Belmont Patcher %s by %s (made with AI assistance)" % (PATCHER_VERSION, PATCHER_AUTHOR))
     try: scale = max(1.0, root.winfo_fpixels('1i') / 96.0)   # pixel sizes follow the display scaling (fonts already do)
     except Exception: scale = 1.0
-    root.minsize(int(790 * scale), int(690 * scale)); wrap = int(360 * scale)
+
+    sw = root.winfo_screenwidth()
+    sh = root.winfo_screenheight()
+    min_w = min(int(480 * scale), max(320, sw - 20))
+    min_h = min(int(340 * scale), max(240, sh - 40))
+    root.minsize(min_w, min_h)
+
+    init_w = min(int(820 * scale), max(min_w, sw - 30))
+    init_h = min(int(640 * scale), max(min_h, sh - 70))
+    root.geometry(f"{init_w}x{init_h}")
+    wrap = int(340 * scale)
+
     q = queue.Queue()
     def glog(*a): q.put(' '.join(str(x) for x in a))
     game = [find_game()]
-    top = ttk.Frame(root, padding=10); top.pack(fill='both', expand=True)
-    gf = ttk.Frame(top); gf.pack(fill='x')
+
+    top = ttk.Frame(root, padding=8); top.pack(fill='both', expand=True)
+
+    # Top: Game folder
+    gf = ttk.Frame(top); gf.pack(side='top', fill='x', pady=(0, 4))
     ttk.Label(gf, text="Game folder:").pack(side='left')
     gvar = tk.StringVar(value=game[0] or "(not found, click Browse)")
     ttk.Label(gf, textvariable=gvar, foreground='#555').pack(side='left', padx=6, fill='x', expand=True)
@@ -1244,9 +1258,54 @@ def run_gui():
         if d and is_game_dir(d): game[0] = os.path.abspath(d); gvar.set(game[0])
         elif d: messagebox.showerror("Belmont Patcher", "That folder doesn't contain GameAssembly.dll and the game's _Data folder.")
     ttk.Button(gf, text="Browse...", command=browse).pack(side='right')
+
+    # Bottom: Action buttons (Fixed at bottom so always visible regardless of scrolling/screen size)
+    bf = ttk.Frame(top); bf.pack(side='bottom', fill='x', pady=(6, 0))
+
+    # Middle: Scrollable container
+    middle_frame = ttk.Frame(top)
+    middle_frame.pack(side='top', fill='both', expand=True)
+
+    canvas = tk.Canvas(middle_frame, highlightthickness=0)
+    vscroll = ttk.Scrollbar(middle_frame, orient='vertical', command=canvas.yview)
+    scroll_content = ttk.Frame(canvas)
+
+    scroll_content_id = canvas.create_window((0, 0), window=scroll_content, anchor='nw')
+
+    def _on_content_configure(event):
+        canvas.configure(scrollregion=canvas.bbox('all'))
+    scroll_content.bind('<Configure>', _on_content_configure)
+
+    def _on_canvas_configure(event):
+        canvas.itemconfig(scroll_content_id, width=event.width)
+    canvas.bind('<Configure>', _on_canvas_configure)
+
+    canvas.configure(yscrollcommand=vscroll.set)
+    canvas.pack(side='left', fill='both', expand=True)
+    vscroll.pack(side='right', fill='y')
+
+    def _on_mousewheel(event):
+        try:
+            if event.widget == logw or str(event.widget).endswith('text'):
+                return
+            bbox = canvas.bbox('all')
+            if bbox and (bbox[3] - bbox[1]) > canvas.winfo_height():
+                if event.delta:
+                    canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+                elif event.num == 5:
+                    canvas.yview_scroll(2, "units")
+                elif event.num == 4:
+                    canvas.yview_scroll(-2, "units")
+        except Exception:
+            pass
+
+    root.bind_all("<MouseWheel>", _on_mousewheel)
+    root.bind_all("<Button-4>", _on_mousewheel)
+    root.bind_all("<Button-5>", _on_mousewheel)
+
     vars_, choices, boxes = {}, {}, {}
     small = ('Segoe UI', 8)
-    body = ttk.Frame(top); body.pack(fill='x', pady=(8, 4))
+    body = ttk.Frame(scroll_content); body.pack(fill='x', pady=(4, 6))
     groups = dict(GUI_GROUPS)
     def tip(parent, text, indent=0): ttk.Label(parent, text=text, foreground='#777', font=small, wraplength=wrap, justify='left').pack(anchor='w', padx=(int(24 * scale) + indent, 0))
     for col, titles in enumerate(GUI_COLUMNS):
@@ -1283,8 +1342,12 @@ def run_gui():
     for parent in set(GUI_SUB.values()): vars_[parent].trace_add('write', sync_subs)
     sync_subs()
     body.columnconfigure(0, weight=1); body.columnconfigure(1, weight=1)
-    bf = ttk.Frame(top); bf.pack(fill='x', pady=6)
-    logw = ScrolledText(top, height=12, font=('Consolas', 9), state='disabled'); logw.pack(fill='both', expand=True)
+
+    log_lf = ttk.LabelFrame(scroll_content, text="Patcher Log", padding=4)
+    log_lf.pack(fill='x', expand=True, padx=4, pady=(2, 6))
+    logw = ScrolledText(log_lf, height=8, font=('Consolas', 9), state='disabled')
+    logw.pack(fill='both', expand=True)
+
     busy = [False]
     def collect():
         c = dict(cfg)
@@ -1302,6 +1365,10 @@ def run_gui():
     def start(kind):
         if busy[0]: return
         if not game[0]: messagebox.showerror("Belmont Patcher", "Select the game folder first (Browse...)."); return
+        try:
+            canvas.yview_moveto(1.0)
+        except Exception:
+            pass
         if kind == 'install':
             c = collect(); save_cfg(c)
             glog("=== Applying ==="); fn = lambda: install(game[0], c, glog)
